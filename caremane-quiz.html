@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0E6B52">
+<title>ケアマネ試験対策 2026｜五肢複択トレーナー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFF3F0;
+  --card:#FFFFFF;
+  --ink:#1C2B26;
+  --ink-soft:#5A6B64;
+  --green:#0E6B52;
+  --green-deep:#0A4E3C;
+  --green-soft:#DCEAE2;
+  --red:#B8432C;
+  --red-soft:#F6E4DF;
+  --gold:#9A7B2D;
+  --line:#D5DEDA;
+  --radius:16px;
+  --disp:"Shippori Mincho B1",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  font-family:var(--body);
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.65;
+  min-height:100dvh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px 48px}
+.screen{display:none;animation:fade .25s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== ヘッダー ===== */
+.topbar{
+  background:var(--green-deep);
+  color:#F2F5EF;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;
+}
+.topbar .title{font-family:var(--disp);font-weight:800;font-size:1.05rem;letter-spacing:.06em}
+.topbar .sub{font-size:.68rem;opacity:.75;letter-spacing:.12em}
+.topbar button{
+  background:transparent;border:1px solid rgba(255,255,255,.35);color:#F2F5EF;
+  border-radius:8px;padding:5px 12px;font-size:.78rem;font-family:var(--body);
+}
+.topbar button:active{background:rgba(255,255,255,.12)}
+
+/* ===== ホーム：試験バナー ===== */
+.exam-banner{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  margin-top:20px;
+  padding:20px 20px 18px;
+  display:flex;align-items:center;gap:16px;
+  position:relative;overflow:hidden;
+}
+.exam-banner::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(var(--green),var(--green-deep));
+}
+.exam-info h2{font-family:var(--disp);font-size:1.15rem;font-weight:800;letter-spacing:.03em}
+.exam-info .eyebrow{font-size:.68rem;letter-spacing:.22em;color:var(--green);font-weight:700;margin-bottom:2px}
+.exam-info .date{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+/* 検印風カウントダウン・スタンプ（このアプリの署名要素） */
+.stamp{
+  margin-left:auto;flex-shrink:0;
+  width:92px;height:92px;border-radius:50%;
+  border:2.5px solid var(--red);
+  color:var(--red);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transform:rotate(-7deg);
+  font-family:var(--disp);
+  position:relative;
+}
+.stamp::after{
+  content:"";position:absolute;inset:4px;border-radius:50%;
+  border:1px solid rgba(184,67,44,.5);
+}
+.stamp .l1{font-size:.6rem;letter-spacing:.15em;font-weight:600}
+.stamp .num{font-size:1.9rem;font-weight:800;line-height:1;margin:1px 0}
+.stamp .l2{font-size:.6rem;letter-spacing:.3em;font-weight:600}
+
+/* ===== 成績サマリー ===== */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;
+}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:12px 8px;text-align:center;
+}
+.stat .v{font-family:var(--disp);font-weight:800;font-size:1.3rem;color:var(--green-deep)}
+.stat .v small{font-size:.7rem;font-weight:600}
+.stat .k{font-size:.68rem;color:var(--ink-soft);letter-spacing:.08em}
+
+/* ===== 出題設定 ===== */
+.section-label{
+  margin:26px 2px 10px;
+  font-size:.72rem;letter-spacing:.2em;color:var(--ink-soft);font-weight:700;
+  display:flex;align-items:center;gap:10px;
+}
+.section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat-btn{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 14px;text-align:left;font-family:var(--body);cursor:pointer;
+  transition:border-color .15s, box-shadow .15s;
+}
+.cat-btn:focus-visible,.choice:focus-visible,button:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.cat-btn.selected{border-color:var(--green);box-shadow:0 0 0 1.5px var(--green) inset}
+.cat-btn .name{font-weight:700;font-size:.92rem}
+.cat-btn .meta{font-size:.7rem;color:var(--ink-soft);margin-top:3px}
+.cat-btn.wide{grid-column:1/-1}
+.count-row{display:flex;gap:10px;margin-top:10px}
+.count-btn{
+  flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:11px 0;font-size:.88rem;font-weight:600;font-family:var(--body);cursor:pointer;color:var(--ink);
+}
+.count-btn.selected{background:var(--green);border-color:var(--green);color:#fff}
+
+.primary-btn{
+  display:block;width:100%;margin-top:22px;
+  background:var(--green);color:#fff;border:none;border-radius:14px;
+  padding:16px;font-size:1.02rem;font-weight:700;font-family:var(--body);
+  letter-spacing:.1em;cursor:pointer;
+  box-shadow:0 4px 14px rgba(14,107,82,.28);
+}
+.primary-btn:active{transform:translateY(1px)}
+.primary-btn:disabled{background:#B9C6C0;box-shadow:none;cursor:not-allowed}
+.ghost-btn{
+  display:block;width:100%;margin-top:12px;
+  background:transparent;color:var(--green-deep);border:1.5px solid var(--green);
+  border-radius:14px;padding:13px;font-size:.92rem;font-weight:700;font-family:var(--body);cursor:pointer;
+}
+.ghost-btn:disabled{border-color:var(--line);color:#A8B4AF;cursor:not-allowed}
+
+/* ===== 出題画面 ===== */
+.quiz-head{margin-top:18px;display:flex;align-items:center;justify-content:space-between}
+.q-progress-text{font-family:var(--disp);font-weight:800;font-size:1rem}
+.q-cat{
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  color:var(--green-deep);background:var(--green-soft);
+  border-radius:99px;padding:4px 12px;
+}
+.bar{height:5px;background:#DDE5E1;border-radius:99px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .3s ease}
+
+.q-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  margin-top:14px;padding:20px 18px;
+}
+.q-directive{
+  font-size:.78rem;font-weight:700;color:var(--red);
+  border:1px solid currentColor;border-radius:6px;
+  display:inline-block;padding:2px 10px;margin-bottom:10px;letter-spacing:.1em;
+}
+.q-text{font-size:1rem;font-weight:600;line-height:1.75}
+
+/* マークシート式の選択肢 */
+.choices{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.choice{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--card);border:1.5px solid var(--line);border-radius:12px;
+  padding:13px 14px;text-align:left;font-family:var(--body);font-size:.92rem;
+  line-height:1.6;cursor:pointer;color:var(--ink);width:100%;
+  transition:border-color .12s;
+}
+.choice .mark{
+  flex-shrink:0;width:26px;height:26px;border-radius:50%;
+  border:1.8px solid var(--ink-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-weight:800;font-size:.82rem;color:var(--ink-soft);
+  margin-top:1px;transition:all .12s;
+}
+.choice.picked{border-color:var(--green)}
+.choice.picked .mark{background:var(--green);border-color:var(--green);color:#fff}
+.choice.correct{border-color:var(--green);background:var(--green-soft)}
+.choice.correct .mark{background:var(--green);border-color:var(--green);color:#fff}
+.choice.wrongpick{border-color:var(--red);background:var(--red-soft)}
+.choice.wrongpick .mark{background:var(--red);border-color:var(--red);color:#fff}
+.choice.dim{opacity:.55}
+.choice:disabled{cursor:default}
+
+.pick-counter{
+  margin-top:12px;text-align:center;font-size:.8rem;color:var(--ink-soft);
+}
+.pick-counter b{color:var(--green-deep);font-size:.95rem}
+
+/* 解説パネル */
+.feedback{margin-top:14px;border-radius:var(--radius);padding:16px 16px;display:none}
+.feedback.show{display:block;animation:fade .25s ease}
+.feedback.ok{background:var(--green-soft);border:1px solid var(--green)}
+.feedback.ng{background:var(--red-soft);border:1px solid var(--red)}
+.feedback .verdict{font-family:var(--disp);font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.feedback.ok .verdict{color:var(--green-deep)}
+.feedback.ng .verdict{color:var(--red)}
+.feedback .ans-line{font-size:.82rem;font-weight:700;margin-top:6px}
+.feedback .exp{font-size:.85rem;margin-top:8px;color:var(--ink)}
+
+/* ===== 結果画面 ===== */
+.result-hero{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  margin-top:22px;padding:28px 20px;text-align:center;position:relative;
+}
+.result-hero .rate{font-family:var(--disp);font-weight:800;font-size:3.2rem;color:var(--green-deep);line-height:1}
+.result-hero .rate small{font-size:1.2rem}
+.result-hero .detail{font-size:.85rem;color:var(--ink-soft);margin-top:8px}
+.result-hero .judge{
+  position:absolute;top:14px;right:14px;
+  width:74px;height:74px;border-radius:50%;
+  border:2.5px solid var(--red);color:var(--red);
+  transform:rotate(8deg);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-weight:800;font-size:1rem;letter-spacing:.1em;
+}
+.result-hero .judge.pass{border-color:var(--green);color:var(--green)}
+.cat-report{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.cat-row{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;display:flex;align-items:center;gap:12px;
+}
+.cat-row .cname{font-size:.82rem;font-weight:700;width:7.2em;flex-shrink:0}
+.cat-row .cbar{flex:1;height:6px;background:#DDE5E1;border-radius:99px;overflow:hidden}
+.cat-row .cbar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.cat-row .cnum{font-size:.78rem;color:var(--ink-soft);width:3.6em;text-align:right;flex-shrink:0}
+
+.note{
+  margin-top:20px;font-size:.72rem;color:var(--ink-soft);line-height:1.7;
+  border-top:1px dashed var(--line);padding-top:12px;
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <div class="sub">介護支援専門員実務研修受講試験</div>
+    <div class="title">ケアマネ試験対策帖</div>
+  </div>
+  <button id="homeBtn" hidden>中断して戻る</button>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== ホーム ===== -->
+  <section id="home" class="screen active">
+    <div class="exam-banner">
+      <div class="exam-info">
+        <div class="eyebrow">令和8年度・第29回</div>
+        <h2>本試験対策<br>五肢複択トレーナー</h2>
+        <div class="date">試験日：2026年10月11日（日）10:00</div>
+      </div>
+      <div class="stamp" aria-label="試験までの残り日数">
+        <span class="l1">本試験まで</span>
+        <span class="num" id="daysLeft">--</span>
+        <span class="l2">日</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="v" id="stTotal">0<small>問</small></div><div class="k">累計解答</div></div>
+      <div class="stat"><div class="v" id="stRate">--<small>%</small></div><div class="k">累計正答率</div></div>
+      <div class="stat"><div class="v" id="stWeak">0<small>問</small></div><div class="k">苦手問題</div></div>
+    </div>
+
+    <div class="section-label">出題分野をえらぶ</div>
+    <div class="cat-grid" id="catGrid">
+      <button class="cat-btn selected" data-cat="all">
+        <div class="name">全分野ミックス</div><div class="meta" id="metaAll">--問収録</div>
+      </button>
+      <button class="cat-btn" data-cat="shien">
+        <div class="name">介護支援分野</div><div class="meta" id="metaShien">--問収録</div>
+      </button>
+      <button class="cat-btn" data-cat="iryo">
+        <div class="name">保健医療サービス</div><div class="meta" id="metaIryo">--問収録</div>
+      </button>
+      <button class="cat-btn" data-cat="fukushi">
+        <div class="name">福祉サービス</div><div class="meta" id="metaFukushi">--問収録</div>
+      </button>
+    </div>
+
+    <div class="section-label">出題数をえらぶ</div>
+    <div class="count-row" id="countRow">
+      <button class="count-btn selected" data-count="10">10問</button>
+      <button class="count-btn" data-count="20">20問</button>
+      <button class="count-btn" data-count="0">全問</button>
+    </div>
+
+    <button class="primary-btn" id="startBtn">出題をはじめる</button>
+    <button class="ghost-btn" id="weakBtn" disabled>苦手問題を復習する（0問）</button>
+
+    <p class="note">
+      本番と同じ五肢複択（5つの選択肢から2つまたは3つ選ぶ）形式です。指定の個数を選ぶと解答できます。
+      収録問題はオリジナルの練習問題であり、実際の試験問題ではありません。制度改正（令和6年度改定）の内容を反映しています。
+    </p>
+  </section>
+
+  <!-- ===== 出題 ===== -->
+  <section id="quiz" class="screen">
+    <div class="quiz-head">
+      <div class="q-progress-text" id="qProgress">問1 / 10</div>
+      <div class="q-cat" id="qCat">介護支援分野</div>
+    </div>
+    <div class="bar"><i id="qBar" style="width:0%"></i></div>
+
+    <div class="q-card">
+      <div class="q-directive" id="qDirective">正しいものを2つ選べ</div>
+      <div class="q-text" id="qText"></div>
+      <div class="choices" id="qChoices"></div>
+      <div class="pick-counter" id="pickCounter"></div>
+    </div>
+
+    <div class="feedback" id="feedback">
+      <div class="verdict" id="fbVerdict"></div>
+      <div class="ans-line" id="fbAns"></div>
+      <div class="exp" id="fbExp"></div>
+    </div>
+
+    <button class="primary-btn" id="answerBtn" disabled>解答する</button>
+    <button class="primary-btn" id="nextBtn" style="display:none">次の問題へ</button>
+  </section>
+
+  <!-- ===== 結果 ===== -->
+  <section id="result" class="screen">
+    <div class="result-hero">
+      <div class="judge" id="judgeStamp">要復習</div>
+      <div class="rate"><span id="rRate">0</span><small>%</small></div>
+      <div class="detail" id="rDetail">10問中 0問正解</div>
+    </div>
+    <div class="cat-report" id="catReport"></div>
+    <button class="primary-btn" id="retryWrongBtn">間違えた問題だけ解き直す</button>
+    <button class="ghost-btn" id="backHomeBtn">ホームへもどる</button>
+    <p class="note">本試験の合格基準は分野ごとにおおむね正答率70%が目安（問題の難易度により補正）。分野別の取りこぼしがないかを確認しましょう。</p>
+  </section>
+
+</div>
+<script>
+/* =====================================================
+   問題データ（42問）
+   cat: shien=介護支援 / iryo=保健医療 / fukushi=福祉
+   n: 選ぶ個数 / ans: 正解の選択肢番号(1始まり)
+   ===================================================== */
+const QUESTIONS = [
+/* ---------- 介護支援分野 ---------- */
+{cat:"shien",n:3,q:"介護保険制度の目的等について正しいものはどれか。",
+c:["要介護者等がその尊厳を保持し、有する能力に応じ自立した日常生活を営めるよう支援することを目的としている。","国民の共同連帯の理念に基づき設けられた制度である。","保険給付は、医療との連携に十分配慮して行われなければならない。","介護保険の保険者は国である。","要介護状態の軽減や悪化の防止は、制度の目的に含まれない。"],
+ans:[1,2,3],
+exp:"介護保険法第1条・第2条の基本理念。尊厳の保持と自立支援、国民の共同連帯、医療との連携が柱です。保険者は市町村及び特別区（選択肢4は誤り）。要介護状態の軽減・悪化防止も明記されています（選択肢5は誤り）。"},
+
+{cat:"shien",n:2,q:"介護保険の被保険者について正しいものはどれか。",
+c:["第1号被保険者は、市町村の区域内に住所を有する65歳以上の者である。","第2号被保険者は、市町村の区域内に住所を有する40歳以上65歳未満の医療保険加入者である。","医療保険に加入していない40歳以上65歳未満の生活保護受給者も、第2号被保険者となる。","海外に居住し日本国内に住所を有しない65歳以上の日本国籍者も、被保険者となる。","障害者支援施設などの適用除外施設の入所者も、被保険者となる。"],
+ans:[1,2],
+exp:"第2号被保険者は「医療保険加入」が要件のため、医療保険未加入の生活保護受給者は該当しません（介護サービスは生活保護の介護扶助で対応）。被保険者資格には国内の住所が必要で、適用除外施設入所者は被保険者となりません。"},
+
+{cat:"shien",n:3,q:"要介護認定について正しいものはどれか。",
+c:["認定の効力は、申請日にさかのぼって生じる。","新規認定に係る認定調査は、原則として市町村が行う。","更新認定に係る認定調査は、指定居宅介護支援事業者等に委託することができる。","新規認定の有効期間は、原則12か月である。","主治医がいない場合は、要介護認定を受けることができない。"],
+ans:[1,2,3],
+exp:"新規認定の有効期間は原則6か月（選択肢4は誤り）。主治医がいない場合は、市町村の指定する医師等の診断を受けて意見を求めます（選択肢5は誤り）。新規調査は原則市町村実施、更新調査は委託可という対比は頻出です。"},
+
+{cat:"shien",n:2,q:"介護認定審査会について正しいものはどれか。",
+c:["委員は、保健・医療・福祉に関する学識経験者のうちから市町村長が任命する。","委員の任期は原則2年であり、条例により2年を超え3年以下とすることができる。","介護認定審査会は、都道府県に設置される。","委員には、申請者本人の主治医が必ず含まれなければならない。","審査・判定の結果は、都道府県知事に通知する。"],
+ans:[1,2],
+exp:"介護認定審査会は市町村に設置（都道府県に設置されるのは審査請求を扱う「介護保険審査会」。混同注意）。審査・判定結果は市町村に通知されます。本人の主治医を含める規定はありません。"},
+
+{cat:"shien",n:2,q:"介護保険の保険料について正しいものはどれか。",
+c:["第1号被保険者の保険料は、年額18万円以上の年金受給者については特別徴収（年金からの天引き）が原則である。","第2号被保険者の保険料は、加入している医療保険者が医療保険料と一体的に徴収する。","第1号被保険者の保険料率は、国が全国一律に定める。","普通徴収の場合、世帯主や配偶者に納付義務はない。","第2号被保険者の保険料は、市町村が直接徴収する。"],
+ans:[1,2],
+exp:"第1号保険料率は市町村が条例で定めます（全国一律ではない）。普通徴収では世帯主・配偶者に連帯納付義務があります。第2号は医療保険者が徴収し、支払基金を通じて市町村へ交付される流れも押さえましょう。"},
+
+{cat:"shien",n:3,q:"介護保険の保険給付について正しいものはどれか。",
+c:["保険給付には、介護給付・予防給付・市町村特別給付の3種類がある。","市町村特別給付の財源は、第1号被保険者の保険料である。","居宅療養管理指導には、区分支給限度基準額が適用されない。","福祉用具購入費は、区分支給限度基準額に含まれる。","予防給付は、要介護1・2の者を対象とする。"],
+ans:[1,2,3],
+exp:"福祉用具購入費（年間10万円）・住宅改修費（20万円）は区分支給限度基準額とは別枠です。予防給付の対象は要支援1・2。限度額が適用されないサービス（居宅療養管理指導など）は頻出です。"},
+
+{cat:"shien",n:2,q:"介護保険の費用負担について正しいものはどれか。",
+c:["居宅給付費の公費負担は、国25%（調整交付金を含む）、都道府県12.5%、市町村12.5%である。","施設等給付費の公費負担は、国20%、都道府県17.5%、市町村12.5%である。","利用者負担は、所得にかかわらず一律1割である。","調整交付金は、すべての市町村に一律5%が交付される。","第2号被保険者の保険料は、給付費の50%を負担する。"],
+ans:[1,2],
+exp:"施設等給付費では国と都道府県の割合が入れ替わる点（国20%・都道府県17.5%）が頻出。利用者負担は所得により1〜3割。調整交付金は市町村間の格差調整のため一律ではありません。保険料負担割合は令和6〜8年度で第1号23%・第2号27%です。"},
+
+{cat:"shien",n:3,q:"指定居宅介護支援について正しいものはどれか。",
+c:["アセスメントに当たっては、利用者の居宅を訪問し、利用者及びその家族に面接して行わなければならない。","居宅サービス計画の原案について、サービス担当者会議で専門的な見地からの意見を求める。","モニタリングは、特段の事情がない限り、少なくとも月1回は利用者の居宅を訪問して行う。","居宅サービス計画は、利用者に説明すれば交付しなくてもよい。","サービス担当者会議は、必ず対面で開催しなければならない。"],
+ans:[1,2,3],
+exp:"居宅サービス計画は利用者・担当者への交付が義務。サービス担当者会議はテレビ電話装置等の活用も認められています。なお令和6年度改定で、一定の要件下でモニタリング訪問にテレビ電話等を併用できる仕組みも導入されました（原則は訪問）。"},
+
+{cat:"shien",n:2,q:"地域支援事業及び地域包括支援センターについて正しいものはどれか。",
+c:["地域包括支援センターには、原則として保健師、社会福祉士、主任介護支援専門員が置かれる。","地域包括支援センターは、市町村が設置できるほか、市町村から委託を受けた法人も設置できる。","地域包括支援センターは、都道府県が設置する。","介護予防・日常生活支援総合事業は、市町村の任意事業である。","包括的支援事業の財源には、第2号被保険者の保険料が含まれる。"],
+ans:[1,2],
+exp:"地域包括支援センターの設置主体は市町村（直営または委託）。総合事業は必須事業です。包括的支援事業・任意事業の財源に第2号保険料は充当されない（公費＋第1号保険料）点は頻出の引っかけです。"},
+
+{cat:"shien",n:2,q:"介護保険施設について正しいものはどれか。",
+c:["介護老人福祉施設への新規入所は、原則として要介護3以上の者に限られる。","介護医療院は、長期療養のための医療と日常生活上の世話を一体的に提供する施設である。","介護療養型医療施設は、現在も新たに開設することができる。","介護老人保健施設は、都道府県知事の「指定」を受けて開設する。","介護保険施設には、要支援者も入所できる。"],
+ans:[1,2],
+exp:"介護療養型医療施設は2024（令和6）年3月末で廃止されました。介護老人保健施設と介護医療院は指定ではなく都道府県知事の「開設許可」。介護保険施設は要介護者のみが対象です。"},
+
+{cat:"shien",n:3,q:"介護支援専門員について正しいものはどれか。",
+c:["介護支援専門員証の有効期間は5年であり、更新には所定の研修の受講が必要である。","介護支援専門員の名義貸しは、禁止されている。","介護支援専門員でなくなった後も、正当な理由なく業務上知り得た秘密を漏らしてはならない。","介護支援専門員の登録は、市町村長に対して行う。","介護支援専門員には、信用失墜行為の禁止に関する規定はない。"],
+ans:[1,2,3],
+exp:"登録先は都道府県知事です。義務規定（公正誠実な業務遂行、基準遵守、資質向上努力、名義貸し禁止、信用失墜行為の禁止、秘密保持）はまとめて頻出。秘密保持義務は退職後も継続します。"},
+
+{cat:"shien",n:2,q:"介護保険審査会について正しいものはどれか。",
+c:["要介護認定に関する処分に不服がある者は、介護保険審査会に審査請求をすることができる。","介護保険審査会は、都道府県に設置される。","介護保険審査会は、市町村に設置される。","保険料の徴収に関する処分は、審査請求の対象とならない。","審査請求をせずに、直ちに処分の取消しの訴えを提起することができる。"],
+ans:[1,2],
+exp:"審査請求の対象は、保険給付に関する処分（要介護認定を含む）と保険料その他の徴収金に関する処分です。処分取消訴訟は審査請求の裁決を経た後でなければ提起できません（審査請求前置主義）。"},
+
+{cat:"shien",n:2,q:"国民健康保険団体連合会が行う介護保険関係業務について正しいものはどれか。",
+c:["市町村から委託を受けて、介護給付費の審査・支払を行う。","指定事業者のサービスに関する利用者からの苦情を受け付け、調査や指導・助言を行う。","要介護認定の審査・判定を行う。","介護保険審査会を設置する。","財政安定化基金を設置する。"],
+ans:[1,2],
+exp:"国保連の業務は「審査・支払」と「苦情処理」が二本柱。要介護認定の審査・判定は介護認定審査会（市町村）、介護保険審査会と財政安定化基金は都道府県です。実施主体の対応関係を整理しましょう。"},
+
+{cat:"shien",n:2,q:"2024（令和6）年度の制度改正・報酬改定について正しいものはどれか。",
+c:["介護予防支援について、指定居宅介護支援事業者も市町村長の指定を受けて実施できるようになった。","居宅介護支援のモニタリングについて、一定の要件の下でテレビ電話装置等を活用する方法が認められた。","介護療養型医療施設が新たに創設された。","福祉用具は、すべての種目が貸与から販売に一本化された。","利用者負担は、すべての利用者が2割負担となった。"],
+ans:[1,2],
+exp:"令和6年度から、介護予防支援は地域包括支援センターに加えて居宅介護支援事業者も指定を受けて実施可能に。福祉用具は一部種目（固定用スロープ、歩行器〈歩行車を除く〉、単点杖・多点杖など）が貸与と販売の「選択制」になりました。"},
+
+{cat:"shien",n:3,q:"住所地特例について正しいものはどれか。",
+c:["対象施設には、介護保険施設、特定施設、養護老人ホームが含まれる。","住所地特例が適用されると、施設所在地の市町村ではなく、入所前の住所地の市町村が保険者となる。","認知症対応型共同生活介護（グループホーム）は、住所地特例の対象である。","住所地特例対象者は、施設所在地の市町村の地域密着型サービス（一部）や地域支援事業を利用できる。","有料老人ホームは、住所地特例の対象とならない。"],
+ans:[1,2,4],
+exp:"グループホームなどの地域密着型サービスの住居は住所地特例の対象外です。有料老人ホーム（特定施設に該当するもの等）は対象。平成26年改正で、特例対象者も施設所在市町村の地域密着型サービス等を利用できるようになりました。"},
+
+/* ---------- 保健医療サービス分野 ---------- */
+{cat:"iryo",n:3,q:"高齢者の疾患の特徴について正しいものはどれか。",
+c:["複数の疾患を併せもつことが多い。","症状が非定型的で、典型的な症状が現れないことがある。","薬剤の副作用が出やすい。","症状の現れ方の個人差は小さい。","予後は、年齢のみによって決まる。"],
+ans:[1,2,3],
+exp:"高齢者は恒常性維持機能の低下により、多疾患併存・非定型症状・薬物有害事象の出やすさが特徴です。個人差はむしろ大きく、予後は疾患・生活環境・栄養状態など多くの要因に左右されます。"},
+
+{cat:"iryo",n:2,q:"バイタルサインについて正しいものはどれか。",
+c:["高齢者の肺炎では、発熱がみられないことがある。","1分当たりの心拍数が60未満の状態を徐脈という。","血圧は、左右どちらの上腕で測定しても必ず同じ値になる。","ジャパン・コーマ・スケール（JCS）は、数値が小さいほど意識障害が重い。","高齢者の正常な呼吸数は、1分間に30回程度である。"],
+ans:[1,2],
+exp:"JCSは数値が大きいほど意識障害が重度（Ⅲ-300が最重度）。正常呼吸数は1分間に15〜20回程度で、30回は頻呼吸です。高齢者の感染症では発熱・咳などの典型症状を欠くことがあり、食欲低下や活気のなさが唯一のサインのこともあります。"},
+
+{cat:"iryo",n:3,q:"検査値について正しいものはどれか。",
+c:["血清アルブミン値は、高齢者の栄養状態をみる指標として用いられる。","ヘモグロビンA1c（HbA1c）は、過去1〜2か月の平均的な血糖レベルを反映する。","CRP（C反応性たんぱく質）は、体内で炎症が起きているときに上昇する。","BMIは、体重（kg）を身長（m）で割った値である。","AST・ALTは、腎機能をみる指標である。"],
+ans:[1,2,3],
+exp:"BMI＝体重（kg）÷身長（m）の2乗です。AST・ALTは肝機能の指標（腎機能は尿素窒素・クレアチニン等）。アルブミン3.6g/dL以下で低栄養が疑われる、HbA1cは直前の食事に影響されない、といった点も押さえましょう。"},
+
+{cat:"iryo",n:3,q:"認知症について正しいものはどれか。",
+c:["レビー小体型認知症では、具体的で生々しい幻視やパーキンソン症状がみられる。","血管性認知症は、脳梗塞や脳出血などの脳血管障害により生じる。","BPSD（行動・心理症状）は、環境の調整やかかわり方の工夫により軽減することがある。","アルツハイマー型認知症は、男性に多い。","若年性認知症とは、65歳以上で発症した認知症をいう。"],
+ans:[1,2,3],
+exp:"アルツハイマー型は女性に多く、若年性認知症は65歳未満で発症した認知症です。レビー小体型の三大特徴（認知機能の変動・幻視・パーキンソン症状）は頻出。BPSDは中核症状と異なり、ケア次第で改善の余地があります。"},
+
+{cat:"iryo",n:2,q:"高齢者に多い疾患について正しいものはどれか。",
+c:["パーキンソン病の四大運動症状は、振戦・筋固縮・無動・姿勢反射障害である。","高齢者の心筋梗塞では、胸痛などの典型的な症状を欠くことがある。","帯状疱疹は、細菌による感染症である。","骨粗鬆症は、男性に多い。","前立腺肥大症では、尿失禁は起こらない。"],
+ans:[1,2],
+exp:"帯状疱疹は水痘・帯状疱疹ウイルスの再活性化によるウイルス感染症。骨粗鬆症は閉経後の女性に多い疾患です。前立腺肥大症では残尿が増え、あふれるように漏れる溢流性尿失禁が起こり得ます。"},
+
+{cat:"iryo",n:2,q:"糖尿病について正しいものはどれか。",
+c:["低血糖では、冷や汗、動悸、ふるえなどがみられ、重度では意識障害に至る。","食事療法と運動療法は、糖尿病治療の基本である。","インスリンの自己注射は、介護職員が代わって行うことができる。","高齢者の血糖コントロール目標は、若年者よりも厳格に設定すべきである。","糖尿病があっても、足の観察（フットケア）は特に必要ない。"],
+ans:[1,2],
+exp:"インスリン注射は医行為であり、介護職員は実施できません（本人の自己注射の見守り・準備の支援は可）。高齢者では低血糖リスクを考慮し、コントロール目標はむしろ緩やかに設定されます。神経障害による足病変の予防にフットケアは重要です。"},
+
+{cat:"iryo",n:3,q:"感染症とその予防について正しいものはどれか。",
+c:["標準予防策（スタンダード・プリコーション）は、すべての人の血液・体液・排泄物等に感染性があるとみなして対応する考え方である。","ノロウイルスによる汚染物の消毒には、次亜塩素酸ナトリウムが有効である。","誤嚥性肺炎の予防には、口腔ケアが有効である。","インフルエンザワクチンは、一度接種すれば生涯有効である。","通常疥癬（角化型でない疥癬）では、個室への隔離が必須である。"],
+ans:[1,2,3],
+exp:"インフルエンザワクチンは毎年の接種が必要です。疥癬のうち隔離が必要なのは感染力の強い角化型（ノルウェー疥癬）で、通常疥癬では個室隔離は必須ではありません。ノロウイルスにアルコール消毒は効きにくい点も頻出です。"},
+
+{cat:"iryo",n:3,q:"在宅医療管理について正しいものはどれか。",
+c:["在宅酸素療法では、機器の周囲での火気の取扱いに注意が必要である。","胃ろうを造設していても、入浴は可能である。","膀胱留置カテーテルの使用中は、蓄尿バッグを膀胱より低い位置に保つ。","人工呼吸器を使用していると、外出することはできない。","在宅酸素療法の酸素流量は、本人や家族の判断で自由に変更してよい。"],
+ans:[1,2,3],
+exp:"酸素吸入中の喫煙・火気は厳禁（引火の危険）。酸素流量の変更は医師の指示によります。胃ろうは造設部が安定していれば入浴可能。蓄尿バッグは尿の逆流による感染を防ぐため膀胱より低く保ちます。携帯用人工呼吸器での外出も可能です。"},
+
+{cat:"iryo",n:2,q:"訪問看護について正しいものはどれか。",
+c:["訪問看護の実施には、主治医の指示（訪問看護指示書）が必要である。","末期の悪性腫瘍の患者に対する訪問看護は、医療保険から給付される。","訪問看護を行うことができるのは、看護師のみである。","急性増悪時に交付される特別訪問看護指示書の有効期間は、原則1か月である。","要介護者であれば、訪問看護指示書がなくても利用できる。"],
+ans:[1,2],
+exp:"訪問看護は保健師・看護師・准看護師のほか、理学療法士・作業療法士・言語聴覚士も行えます。特別訪問看護指示書の有効期間は診療日から14日以内。要介護者でも、末期がんや厚生労働大臣が定める疾病等・急性増悪時は医療保険からの給付になります。"},
+
+{cat:"iryo",n:2,q:"リハビリテーションについて正しいものはどれか。",
+c:["廃用症候群とは、安静や不活動により心身の機能が低下した状態をいう。","通所リハビリテーションは、医師の指示に基づき理学療法士等がリハビリテーションを提供する。","リハビリテーションとは機能回復訓練のみを指し、生活環境の調整は含まれない。","急性期には、リハビリテーションを行ってはならない。","訪問リハビリテーションの実施に、医師の指示は不要である。"],
+ans:[1,2],
+exp:"リハビリテーションは機能訓練に限らず、生活環境の調整や社会参加の支援を含む幅広い概念です。廃用症候群予防のため、急性期から早期にリハビリを開始することが推奨されます。訪問リハにも医師の指示が必要です。"},
+
+{cat:"iryo",n:3,q:"高齢者の栄養・口腔の管理について正しいものはどれか。",
+c:["高齢者は口渇を感じにくく、脱水になりやすい。","嚥下機能が低下すると、誤嚥性肺炎のリスクが高まる。","低栄養の評価には、体重減少率や血清アルブミン値などが用いられる。","義歯を使用していれば、口腔ケアは必要ない。","水分にとろみをつければ、誤嚥を必ず防ぐことができる。"],
+ans:[1,2,3],
+exp:"義歯使用者も義歯の清掃と口腔粘膜のケアが必要です。とろみは誤嚥リスクを下げる工夫の一つですが「必ず防げる」わけではなく、姿勢調整や食形態の工夫、口腔ケアと組み合わせることが大切です。"},
+
+{cat:"iryo",n:2,q:"高齢者の薬剤管理について正しいものはどれか。",
+c:["高齢者は肝機能・腎機能の低下により、薬の作用が強く出たり長引いたりしやすい。","服薬管理が難しい場合、薬の一包化やお薬カレンダーの活用が有効である。","薬は種類が多いほど治療効果が高い。","症状が改善したら、処方薬は自己判断で中止してよい。","薬の飲み残しに気づいても、介護支援専門員が医師や薬剤師に伝える必要はない。"],
+ans:[1,2],
+exp:"多剤併用（ポリファーマシー）はむしろ有害事象のリスクを高めます。服薬中止は必ず医師に相談を。残薬や副作用に気づいたら、ケアマネジャーは医師・薬剤師と連携して情報共有することが求められます。"},
+
+{cat:"iryo",n:3,q:"ターミナルケア（人生の最終段階のケア）について正しいものはどれか。",
+c:["アドバンス・ケア・プランニング（ACP）は、本人・家族・医療介護チームが繰り返し話し合うプロセスである。","死亡診断は、医師または歯科医師が行う。","死期が近づくと、下顎呼吸や死前喘鳴がみられることがある。","在宅での看取りは、法律で禁止されている。","本人の意思は、一度確認したら変更することができない。"],
+ans:[1,2,3],
+exp:"在宅看取りは可能であり、訪問診療・訪問看護と連携して支えます。本人の意思は心身の状態に応じて変化し得るため、ACPでは繰り返しの話し合いと意思の更新が前提です。臨終期の身体変化を家族に事前説明しておくことも大切なケアです。"},
+
+{cat:"iryo",n:2,q:"高齢者の精神・心理面の課題について正しいものはどれか。",
+c:["高齢者のうつ病では、めまいやしびれなどの身体症状や心気的な訴えが目立つことがある。","せん妄は意識障害の一種であり、夕方から夜間にかけて悪化しやすい。","せん妄は、数年かけてゆっくり進行する。","高齢者のうつ病は、自殺のリスクとは関係がない。","アルコール依存症が高齢期に新たに発症することはない。"],
+ans:[1,2],
+exp:"せん妄は急激に発症する点で、緩やかに進行する認知症と区別されます（夜間せん妄が典型）。高齢者のうつ病は自殺リスクと強く関連します。定年退職や配偶者との死別を契機に、高齢期に飲酒問題が始まる例（遅発性）もあります。"},
+
+/* ---------- 福祉サービス分野 ---------- */
+{cat:"fukushi",n:3,q:"相談面接の技術について正しいものはどれか。",
+c:["傾聴では、相手の言葉に耳を傾け、共感的に理解しようとする姿勢が重要である。","開かれた質問（オープンクエスチョン）は、相手が自由に語れるよう促すのに有効である。","閉じられた質問（クローズドクエスチョン）は、事実の確認や焦点を絞る場面で有効である。","面接中に沈黙が生じたら、直ちに話題を変えるべきである。","援助者は、自らの価値観に基づいてクライエントを評価してよい。"],
+ans:[1,2,3],
+exp:"沈黙はクライエントが考えを整理する大切な時間になり得るため、安易に遮らず見守ることも技術の一つ。バイステックの7原則にある「非審判的態度」のとおり、援助者の価値観で一方的に評価しない姿勢が求められます。"},
+
+{cat:"fukushi",n:2,q:"訪問介護について正しいものはどれか。",
+c:["生活援助では、利用者以外の家族のための調理や洗濯を行うことはできない。","爪に異常がなく専門的な管理が必要ない場合の爪切りは、原則として医行為に当たらず、訪問介護員が行うことができる。","庭の草むしりやペットの世話も、生活援助として行うことができる。","インスリンの注射は、訪問介護員が行うことができる。","安否確認のみを目的とする訪問も、身体介護として算定できる。"],
+ans:[1,2],
+exp:"生活援助は利用者本人の日常生活の援助に限られ、家族の分の家事、草むしり・ペットの世話・大掃除などの「日常生活の援助に該当しない行為」は対象外です。インスリン注射は医行為。爪切り・体温測定などは条件を満たせば医行為に該当しません。"},
+
+{cat:"fukushi",n:2,q:"通所介護について正しいものはどれか。",
+c:["通所介護では、入浴・食事の提供や機能訓練などが行われる。","利用者の社会的孤立感の解消や、家族の介護負担の軽減も目的に含まれる。","要支援者は、介護給付としての通所介護を利用できる。","利用者の送迎を行ってはならない。","通所介護計画を作成する必要はない。"],
+ans:[1,2],
+exp:"要支援者向けの通所型サービスは、介護給付ではなく介護予防・日常生活支援総合事業で提供されます。送迎は基本サービスに含まれ、通所介護計画の作成は義務です。レスパイト（家族支援）機能も通所介護の重要な役割です。"},
+
+{cat:"fukushi",n:2,q:"短期入所生活介護について正しいものはどれか。",
+c:["家族の疾病、冠婚葬祭、介護負担の軽減（レスパイト）などの理由でも利用できる。","連続した利用は、30日を超えないことが原則である。","短期入所生活介護は、病院や診療所で提供される。","緊急の場合には利用することができない。","おむつ代は、全額利用者の自己負担である。"],
+ans:[1,2],
+exp:"病院・診療所等で医学的管理の下に提供されるのは短期入所「療養」介護です。緊急短期入所受入加算があるように、緊急時の利用も想定されています。施設サービスや短期入所では、おむつ代は保険給付に含まれ自己負担ではありません。"},
+
+{cat:"fukushi",n:3,q:"福祉用具について正しいものはどれか。",
+c:["福祉用具貸与には、車いす、特殊寝台、工事を伴わずに設置する手すりなどが含まれる。","腰掛便座や入浴補助用具は、特定福祉用具販売の対象である。","2024（令和6）年度から、固定用スロープや歩行器（歩行車を除く）などの一部種目は、貸与と販売の選択制となった。","特定福祉用具購入費の支給限度基準額は、年間20万円である。","車いすは、要支援者にも原則として貸与される。"],
+ans:[1,2,3],
+exp:"福祉用具購入費の限度額は年間10万円（20万円は住宅改修費）。車いす・特殊寝台などは、要支援1・2と要介護1の軽度者には原則貸与されません（状態により例外あり）。選択制の対象種目は令和6年度改定の重要ポイントです。"},
+
+{cat:"fukushi",n:3,q:"住宅改修について正しいものはどれか。",
+c:["手すりの取付けや段差の解消は、支給対象となる。","引き戸等への扉の取替えや、洋式便器等への便器の取替えは、支給対象となる。","支給限度基準額は、原則として20万円である。","エレベーターの設置も、支給対象となる。","申請は工事完了後に行えばよく、事前の申請は不要である。"],
+ans:[1,2,3],
+exp:"支給対象は5種類＋付帯工事（手すり、段差解消、滑り防止等のための床材変更、引き戸等への取替え、洋式便器等への取替え）。エレベーター設置は対象外。原則、工事前の事前申請が必要です。転居時や要介護度が著しく上がった場合のリセットも押さえましょう。"},
+
+{cat:"fukushi",n:2,q:"認知症対応型共同生活介護（グループホーム）について正しいものはどれか。",
+c:["1つの共同生活住居の入居定員は、5人以上9人以下である。","地域密着型サービスであり、原則として事業所所在地の市町村の被保険者が利用する。","要支援1の者も利用できる。","医師の配置が義務付けられている。","認知症でない者も入居できる。"],
+ans:[1,2],
+exp:"対象は認知症の要介護者と要支援2の者（要支援1は不可）。医師の配置義務はありません。地域密着型サービスは市町村が指定・監督し、原則その市町村の被保険者が利用対象です。"},
+
+{cat:"fukushi",n:2,q:"小規模多機能型居宅介護について正しいものはどれか。",
+c:["「通い」を中心として、「訪問」「宿泊」を組み合わせてサービスを提供する。","利用者の居宅サービス計画は、当該事業所の介護支援専門員が作成する。","登録定員は、50人以下である。","利用者は、他の事業所の通所介護を併用して利用できる。","指定は、都道府県知事が行う。"],
+ans:[1,2],
+exp:"登録定員は29人以下。利用登録すると、訪問看護・訪問リハ・居宅療養管理指導・福祉用具貸与などを除き、他の通所介護や訪問介護等は算定できません。地域密着型サービスのため指定権者は市町村長です。"},
+
+{cat:"fukushi",n:3,q:"生活保護制度について正しいものはどれか。",
+c:["生活保護には、生活扶助・介護扶助など8種類の扶助がある。","介護扶助は、原則として現物給付で行われる。","65歳以上の被保護者は介護保険の第1号被保険者となり、介護保険の給付が生活保護に優先する。","介護扶助は、金銭給付が原則である。","生活保護は、個人を単位として行うことが原則である。"],
+ans:[1,2,3],
+exp:"8扶助＝生活・教育・住宅・医療・介護・出産・生業・葬祭。医療扶助と介護扶助は現物給付が原則です。保護は世帯単位が原則（補足性の原理により、介護保険給付などの他法他施策が優先）。1割の利用者負担分が介護扶助から給付されます。"},
+
+{cat:"fukushi",n:3,q:"成年後見制度について正しいものはどれか。",
+c:["法定後見には、後見・保佐・補助の3類型がある。","市町村長も、法定後見の開始の審判を申し立てることができる。","任意後見契約は、公正証書によって締結しなければならない。","成年後見人は、本人に代わって遺言書を作成することができる。","補助は、判断能力が全くない者を対象とする。"],
+ans:[1,2,3],
+exp:"遺言は一身専属的な行為であり、後見人が代理することはできません。判断能力が「欠けているのが通常の状態」の者が後見、「著しく不十分」が保佐、「不十分」が補助です。身寄りのない高齢者のために市町村長申立ての件数が増えています。"},
+
+{cat:"fukushi",n:3,q:"高齢者虐待防止法について正しいものはどれか。",
+c:["高齢者虐待には、身体的虐待・心理的虐待・性的虐待・経済的虐待・介護等の放棄（ネグレクト）の5類型がある。","養護者による虐待を受けたと思われる高齢者を発見し、生命または身体に重大な危険が生じている場合は、市町村への通報義務がある。","養介護施設従事者等による虐待も、法の対象である。","虐待の通報先は、都道府県である。","経済的虐待は、高齢者虐待に含まれない。"],
+ans:[1,2,3],
+exp:"通報先は市町村です（施設従事者による虐待も市町村へ）。年金や預貯金を本人の意思に反して使う行為は経済的虐待に当たります。重大な危険がある場合は「通報義務」、それ以外は「通報努力義務」という区別も頻出です。"},
+
+{cat:"fukushi",n:2,q:"高齢者を支える関連制度について正しいものはどれか。",
+c:["65歳以上の者について介護保険と障害福祉に相当するサービスがある場合、原則として介護保険の給付が優先する。","日常生活自立支援事業は、社会福祉協議会が実施主体となり、福祉サービスの利用援助や日常的な金銭管理などを行う。","日常生活自立支援事業は、判断能力を全く欠く人も契約して利用できる。","同行援護など障害福祉固有のサービスも、すべて介護保険のサービスに置き換えられる。","老人福祉法に基づく市町村の措置制度は、完全に廃止された。"],
+ans:[1,2],
+exp:"日常生活自立支援事業は本人との契約に基づくため、契約内容を理解できる判断能力が必要です（全く欠く場合は成年後見制度へ）。同行援護等の障害固有サービスは介護保険優先の例外。やむを得ない事由がある場合の措置制度は現在も存続しています。"},
+
+{cat:"fukushi",n:2,q:"ソーシャルワークについて正しいものはどれか。",
+c:["セルフネグレクト状態の高齢者には、本人との信頼関係づくりを重視しながら、粘り強く関わることが大切である。","地域援助技術（コミュニティワーク）は、地域住民や関係機関への働きかけを通じて地域の課題解決を図るものである。","支援を拒否する高齢者には、関わらないことが原則である。","個別援助技術（ケースワーク）は、集団を対象とした援助技術である。","インテークとは、援助の終結時に行う面接のことである。"],
+ans:[1,2],
+exp:"支援拒否があっても、見守りを続けながら関係機関と連携してアウトリーチ（訪問による働きかけ）を続けることが求められます。集団を対象とするのはグループワーク。インテークは援助の入口で行う受理面接です。"}
+];
+
+/* =====================================================
+   アプリ本体
+   ===================================================== */
+const CATS = {shien:"介護支援分野", iryo:"保健医療サービス", fukushi:"福祉サービス"};
+const CIRC = ["①","②","③","④","⑤"];
+const EXAM_DATE = new Date(2026,9,11); // 2026-10-11
+
+/* 保存（GitHub Pages上では永続化・プレビュー等ではメモリ内で動作） */
+const _mem = {};
+const store = {
+  get(k,d){ try{ const v = localStorage.getItem("cm26_"+k); return v!==null ? JSON.parse(v) : (k in _mem ? _mem[k] : d); }catch(e){ return k in _mem ? _mem[k] : d; } },
+  set(k,v){ _mem[k]=v; try{ localStorage.setItem("cm26_"+k, JSON.stringify(v)); }catch(e){} }
+};
+
+let selCat = "all", selCount = 10;
+let quiz = [], qi = 0, picked = new Set(), answered = false;
+let sessionCorrect = 0, sessionWrongIdx = [], catScore = {};
+let reviewMode = false;
+
+const $ = id => document.getElementById(id);
+const screens = ["home","quiz","result"];
+function show(name){
+  screens.forEach(s=>$(s).classList.toggle("active", s===name));
+  $("homeBtn").hidden = (name==="home");
+  window.scrollTo(0,0);
+}
+
+/* ---------- ホーム ---------- */
+function renderHome(){
+  const days = Math.max(0, Math.ceil((EXAM_DATE - new Date().setHours(0,0,0,0)) / 86400000));
+  $("daysLeft").textContent = days;
+  const total = store.get("total",0), correct = store.get("correct",0);
+  $("stTotal").innerHTML = total + "<small>問</small>";
+  $("stRate").innerHTML = (total ? Math.round(correct/total*100) : "--") + "<small>%</small>";
+  const weak = store.get("weak",[]);
+  $("stWeak").innerHTML = weak.length + "<small>問</small>";
+  const wb = $("weakBtn");
+  wb.textContent = `苦手問題を復習する（${weak.length}問）`;
+  wb.disabled = weak.length===0;
+  const cnt = c => QUESTIONS.filter(q=>q.cat===c).length;
+  $("metaAll").textContent = QUESTIONS.length + "問収録";
+  $("metaShien").textContent = cnt("shien") + "問収録";
+  $("metaIryo").textContent = cnt("iryo") + "問収録";
+  $("metaFukushi").textContent = cnt("fukushi") + "問収録";
+}
+
+$("catGrid").addEventListener("click", e=>{
+  const btn = e.target.closest(".cat-btn"); if(!btn) return;
+  selCat = btn.dataset.cat;
+  document.querySelectorAll(".cat-btn").forEach(b=>b.classList.toggle("selected", b===btn));
+});
+$("countRow").addEventListener("click", e=>{
+  const btn = e.target.closest(".count-btn"); if(!btn) return;
+  selCount = Number(btn.dataset.count);
+  document.querySelectorAll(".count-btn").forEach(b=>b.classList.toggle("selected", b===btn));
+});
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function startQuiz(pool){
+  quiz = pool; qi = 0; sessionCorrect = 0; sessionWrongIdx = [];
+  catScore = {shien:[0,0], iryo:[0,0], fukushi:[0,0]};
+  show("quiz"); renderQuestion();
+}
+
+$("startBtn").addEventListener("click", ()=>{
+  reviewMode = false;
+  let pool = QUESTIONS.map((q,i)=>({...q, id:i}));
+  if(selCat!=="all") pool = pool.filter(q=>q.cat===selCat);
+  shuffle(pool);
+  if(selCount>0) pool = pool.slice(0, selCount);
+  startQuiz(pool);
+});
+
+$("weakBtn").addEventListener("click", ()=>{
+  reviewMode = true;
+  const weak = store.get("weak",[]);
+  const pool = weak.map(i=>({...QUESTIONS[i], id:i})).filter(q=>q.q);
+  startQuiz(shuffle(pool));
+});
+
+$("homeBtn").addEventListener("click", ()=>{ renderHome(); show("home"); });
+
+/* ---------- 出題 ---------- */
+function renderQuestion(){
+  const q = quiz[qi];
+  picked = new Set(); answered = false;
+  $("qProgress").textContent = `問${qi+1} / ${quiz.length}`;
+  $("qCat").textContent = CATS[q.cat];
+  $("qBar").style.width = (qi / quiz.length * 100) + "%";
+  $("qDirective").textContent = `正しいものを${q.n}つ選べ`;
+  $("qText").textContent = q.q;
+  const box = $("qChoices"); box.innerHTML = "";
+  q.c.forEach((text,i)=>{
+    const b = document.createElement("button");
+    b.className = "choice";
+    b.innerHTML = `<span class="mark">${CIRC[i]}</span><span>${text}</span>`;
+    b.addEventListener("click", ()=>togglePick(i,b,q));
+    box.appendChild(b);
+  });
+  $("feedback").className = "feedback";
+  $("answerBtn").style.display = "block";
+  $("answerBtn").disabled = true;
+  $("nextBtn").style.display = "none";
+  updateCounter(q);
+}
+
+function togglePick(i, btn, q){
+  if(answered) return;
+  if(picked.has(i)){ picked.delete(i); btn.classList.remove("picked"); }
+  else{
+    if(picked.size >= q.n) return; // 指定個数以上は選べない
+    picked.add(i); btn.classList.add("picked");
+  }
+  updateCounter(q);
+}
+
+function updateCounter(q){
+  $("pickCounter").innerHTML = `<b>${picked.size}</b> / ${q.n} 個 選択中`;
+  $("answerBtn").disabled = (picked.size !== q.n);
+}
+
+$("answerBtn").addEventListener("click", ()=>{
+  const q = quiz[qi];
+  answered = true;
+  const ansSet = new Set(q.ans.map(n=>n-1));
+  const isCorrect = picked.size===ansSet.size && [...picked].every(i=>ansSet.has(i));
+
+  document.querySelectorAll("#qChoices .choice").forEach((b,i)=>{
+    b.disabled = true;
+    if(ansSet.has(i)) b.classList.add("correct");
+    else if(picked.has(i)) b.classList.add("wrongpick");
+    else b.classList.add("dim");
+    b.classList.remove("picked");
+  });
+
+  /* 集計 */
+  catScore[q.cat][1]++;
+  if(isCorrect){ sessionCorrect++; catScore[q.cat][0]++; }
+  else sessionWrongIdx.push(q.id);
+  store.set("total", store.get("total",0)+1);
+  if(isCorrect) store.set("correct", store.get("correct",0)+1);
+
+  /* 苦手問題バンクの更新 */
+  let weak = store.get("weak",[]);
+  if(isCorrect){ if(reviewMode) weak = weak.filter(x=>x!==q.id); }
+  else{ if(!weak.includes(q.id)) weak.push(q.id); }
+  store.set("weak", weak);
+
+  const fb = $("feedback");
+  fb.className = "feedback show " + (isCorrect ? "ok" : "ng");
+  $("fbVerdict").textContent = isCorrect ? "正解！" : "不正解";
+  $("fbAns").textContent = "正答：" + q.ans.map(n=>CIRC[n-1]).join(" ");
+  $("fbExp").textContent = q.exp;
+
+  $("answerBtn").style.display = "none";
+  const nb = $("nextBtn");
+  nb.textContent = (qi === quiz.length-1) ? "結果を見る" : "次の問題へ";
+  nb.style.display = "block";
+  nb.focus();
+});
+
+$("nextBtn").addEventListener("click", ()=>{
+  if(qi < quiz.length-1){ qi++; renderQuestion(); }
+  else renderResult();
+});
+
+/* ---------- 結果 ---------- */
+function renderResult(){
+  const total = quiz.length;
+  const rate = Math.round(sessionCorrect/total*100);
+  $("rRate").textContent = rate;
+  $("rDetail").textContent = `${total}問中 ${sessionCorrect}問正解`;
+  const judge = $("judgeStamp");
+  if(rate >= 70){ judge.textContent = "合格圏"; judge.classList.add("pass"); }
+  else{ judge.textContent = "要復習"; judge.classList.remove("pass"); }
+
+  const rep = $("catReport"); rep.innerHTML = "";
+  Object.entries(CATS).forEach(([key,name])=>{
+    const [c,t] = catScore[key];
+    if(t===0) return;
+    const p = Math.round(c/t*100);
+    const row = document.createElement("div");
+    row.className = "cat-row";
+    row.innerHTML = `<div class="cname">${name}</div><div class="cbar"><i style="width:${p}%"></i></div><div class="cnum">${c}/${t}</div>`;
+    rep.appendChild(row);
+  });
+
+  $("retryWrongBtn").disabled = sessionWrongIdx.length===0;
+  $("retryWrongBtn").textContent = sessionWrongIdx.length
+    ? `間違えた${sessionWrongIdx.length}問を解き直す` : "全問正解！お見事です";
+  show("result");
+}
+
+$("retryWrongBtn").addEventListener("click", ()=>{
+  reviewMode = true;
+  const pool = sessionWrongIdx.map(i=>({...QUESTIONS[i], id:i}));
+  startQuiz(shuffle(pool));
+});
+$("backHomeBtn").addEventListener("click", ()=>{ renderHome(); show("home"); });
+
+renderHome();
+</script>
+</body>
+</html>
