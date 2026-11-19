@@ -214,6 +214,7 @@ table.sheet.meal{table-layout:auto}
 .mt-head{display:flex;align-items:center;justify-content:space-between;margin:16px 2px 6px}
 .mt-head.first{margin-top:4px}
 .mt-title{font-size:14px;font-weight:800;color:var(--brand-deep);letter-spacing:.12em}
+.mt-title .mt-range{font-size:12px;letter-spacing:.02em;margin-left:6px;color:var(--sub)}
 .mt-all{font-size:12px;color:var(--sub);font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer}
 .sheet.meal.single th.mh,.sheet.meal.single td.mc{min-width:28px;max-width:28px;width:28px}
 .sheet.meal.single thead tr.h1 th{height:36px;line-height:1.25;white-space:normal}
@@ -248,6 +249,10 @@ table.msum{border-collapse:collapse;width:100%}
 .wgrid .wc.on.hiru{border-color:#2e86ab}
 .wgrid .wc.on.oyatsu{border-color:#b05fa3}
 .wgrid .wc.on.yu{border-color:#4a4e9e}
+.penbar{position:sticky;top:calc(var(--abh,54px) + 8px);z-index:15;display:flex;width:fit-content;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:3px 3px 3px 12px;margin:0 0 10px;box-shadow:0 4px 14px rgba(16,32,42,.14)}
+.penlbl{font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.06em}
+.penbar .seg{border:none;padding:0}
+.penbar .seg button{min-width:42px;font-size:14px;padding:7px 12px}
 .wg-sum{margin-top:9px;font-size:12px;font-weight:700;color:var(--ink);background:#f6f8f9;border-radius:7px;padding:6px 9px;line-height:1.5}
 .scard-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
 .scard-top .sname{font-weight:800;font-size:14px}
@@ -412,8 +417,16 @@ table.msum{border-collapse:collapse;width:100%}
       <button data-v="cfg">食事の設定</button>
     </div>
     <div class="seg" id="mModeSeg">
-      <button data-mode="meal" class="on">食事ごと</button>
+      <button data-mode="toggle" class="on">切替</button>
+      <button data-mode="常食">1</button>
+      <button data-mode="ソフト">ソ</button>
+      <button data-mode="ゼリー">ゼ</button>
+      <button data-mode="clear">消す</button>
       <button data-mode="day">1日まとめて</button>
+    </div>
+    <div class="seg" id="mRangeSeg">
+      <button data-r="month" class="on">1日〜末日</button>
+      <button data-r="pay">21日〜20日（計算用）</button>
     </div>
     <span class="spacer"></span>
     <button class="btn" id="mExcelBtn">Excel出力</button>
@@ -421,18 +434,18 @@ table.msum{border-collapse:collapse;width:100%}
   </div>
 
   <div class="mview on" id="mv-user">
-    <p class="hint"><b>1</b>＝常食　<b>ソ</b>＝ソフト　<b>ゼ</b>＝ゼリー。マスをタップすると、その日だけ食べる⇔食べないを切り替えます（「1日まとめて」は1日分を一括）。右上に赤い印があるマスは、曜日パターンから変更した日です。</p>
+    <p class="hint"><b>1</b>＝常食　<b>ソ</b>＝ソフト　<b>ゼ</b>＝ゼリー。上のボタンを選んでマスをタップします。「1」「ソ」「ゼ」＝その文字を入れる（同じ文字をもう一度で消える）、「切替」＝付ける⇔消す（付く文字は曜日パターンどおり）、「消す」＝空欄に、「1日まとめて」＝1日分を欠食⇔元に戻す。下の合計は、マスに入っている文字で数えます。右上に赤い印があるマスは、曜日パターンから変更した日です。</p>
     <div class="print-title"><span id="mUserL"></span><span id="mUserR"></span></div>
     <div class="card sheet-wrap tall" id="mUserWrap"></div>
     <div class="print-only" id="mUserPrint"></div>
   </div>
 
   <div class="mview" id="mv-staff">
-    <p class="hint">勤務表のシフトから自動で「1」が入ります（人ごとのルールは「食事の設定」で）。その日だけ変えたい時はマスをタップ。右端の合計は前月21日〜今月20日です。表に出るのは食べる可能性がある人だけです（「全員を表示」で全員）。</p>
+    <p class="hint">勤務表のシフトから自動で「1」が入ります（人ごとのルールは「食事の設定」で）。その日だけ変えたい時はマスをタップ。表に出るのは食べる可能性がある人だけです（「全員を表示」で全員）。<br>「1日〜末日」は発注用（右端の合計は前月21日〜今月20日）。「21日〜20日（計算用）」は前月21日〜今月20日の表で、合計もその期間です。どちらの表で変えても同じ内容になります。</p>
     <div class="print-title"><span id="mStaffL"></span><span id="mStaffR"></span></div>
-    <div class="mt-head first"><h3 class="mt-title">昼食</h3><label class="mt-all"><input type="checkbox" id="mShowAll"> 全員を表示</label></div>
+    <div class="mt-head first"><h3 class="mt-title">昼食<span class="mt-range"></span></h3><label class="mt-all"><input type="checkbox" id="mShowAll"> 全員を表示</label></div>
     <div class="card sheet-wrap" id="mLunchWrap"></div>
-    <div class="mt-head"><h3 class="mt-title">夕食</h3></div>
+    <div class="mt-head"><h3 class="mt-title">夕食<span class="mt-range"></span></h3></div>
     <div class="card sheet-wrap" id="mDinnerWrap"></div>
   </div>
 
@@ -463,9 +476,20 @@ table.msum{border-collapse:collapse;width:100%}
       <div class="card" style="overflow:auto;max-width:460px"><table class="edit" id="mShiftMealTable"></table></div>
 
       <h2 class="sec">利用者名簿・曜日ごとの食事パターン</h2>
-      <p class="hint">マスをタップで食べる／食べないを切り替えます。「月」など曜日をタップするとその曜日をまとめて、「昼」など食事名をタップすると全曜日をまとめて、「全」で全部を切り替えます。休止中にすると集計から外れます（名前は残ります）。</p>
-      <div class="ucards" id="mUserCards"></div>
-      <button class="btn addbtn" id="mAddUserBtn">＋ 利用者を追加</button>
+      <p class="hint">「入力」で文字を選んでマスをタップします。「切替」＝食べる⇔食べない（その人の食種の文字が付く）、「1」「ソ」「ゼ」＝その文字を入れる（同じ文字をもう一度で消える）、「消す」＝なし。例：ふだんは常食で朝だけソフトの人は「ソ」を選んで朝のマスをタップ。「月」など曜日をタップするとその曜日をまとめて、「朝」など食事名をタップすると全曜日をまとめて、「全」で全部に同じ操作をします。休止中にすると集計から外れます（名前は残ります）。</p>
+      <div class="psec">
+        <div class="penbar"><span class="penlbl">入力</span>
+          <div class="seg" id="pModeSeg">
+            <button data-mode="toggle" class="on">切替</button>
+            <button data-mode="常食">1</button>
+            <button data-mode="ソフト">ソ</button>
+            <button data-mode="ゼリー">ゼ</button>
+            <button data-mode="clear">消す</button>
+          </div>
+        </div>
+        <div class="ucards" id="mUserCards"></div>
+        <button class="btn addbtn" id="mAddUserBtn">＋ 利用者を追加</button>
+      </div>
     </div>
   </div>
 </div>
@@ -622,21 +646,21 @@ const defaultState=()=>({
     {id:nid(),code:"早", group:"厨房",count:1}
   ],
   staff:[
-    {id:nid(),name:"職員1",role:"看護師 8:30〜17:30",group:"日勤看護",shifts:["日2","4"],off:9,paid:10},
-    {id:nid(),name:"職員2",role:"看護師 8:30〜17:30",group:"日勤看護",shifts:["日2"],off:9,paid:10},
-    {id:nid(),name:"職員3",role:"相談員 8:30〜17:30",group:"CM",shifts:["日2"],off:9,paid:10},
-    {id:nid(),name:"職員4",role:"介護士",group:"訪問",shifts:["日2","早","遅","夜","明"],off:9,paid:10},
-    {id:nid(),name:"職員5",role:"介護士",group:"訪問",shifts:["日2","早","遅","夜","明"],off:9,paid:10},
-    {id:nid(),name:"職員6",role:"介護士",group:"訪問",shifts:["早","遅","夜","明"],off:9,paid:10},
-    {id:nid(),name:"職員7",role:"介護士",group:"訪問",shifts:["日2","早","遅"],off:9,paid:10},
-    {id:nid(),name:"職員8",role:"介護士",group:"訪問",shifts:["早","夜","明"],off:9,paid:10},
-    {id:nid(),name:"職員9",role:"介護士",group:"訪問",shifts:["日2","遅","夜","明"],off:9,paid:10},
-    {id:nid(),name:"職員10",role:"",group:"訪問",shifts:["宿夜","宿明"],off:9,paid:10},
-    {id:nid(),name:"職員11",role:"",group:"訪問",shifts:["遅","夜","明"],off:22,paid:10},
-    {id:nid(),name:"職員12",role:"",group:"訪問",shifts:["8","早"],off:18,paid:10},
-    {id:nid(),name:"職員13",role:"9:00〜13:00",group:"掃除",shifts:["4"],off:12,paid:10},
-    {id:nid(),name:"職員14",role:"9:00〜18:00",group:"厨房",shifts:["遅","日遅"],off:9,paid:10},
-    {id:nid(),name:"職員15",role:"7:00〜8:30",group:"厨房",shifts:["早","早遅"],off:9,paid:10}
+    {id:nid(),name:"後藤 香澄",role:"看護師 8:30〜17:30",group:"日勤看護",shifts:["日2","4"],off:9,paid:10},
+    {id:nid(),name:"中村 富美子",role:"看護師 8:30〜17:30",group:"日勤看護",shifts:["日2"],off:9,paid:10},
+    {id:nid(),name:"源口 則子",role:"相談員 8:30〜17:30",group:"CM",shifts:["日2"],off:9,paid:10},
+    {id:nid(),name:"佐藤 祐規",role:"介護士",group:"訪問",shifts:["日2","早","遅","夜","明"],off:9,paid:10},
+    {id:nid(),name:"平野 瑶子",role:"介護士",group:"訪問",shifts:["日2","早","遅","夜","明"],off:9,paid:10},
+    {id:nid(),name:"井積 由佳",role:"介護士",group:"訪問",shifts:["早","遅","夜","明"],off:9,paid:10},
+    {id:nid(),name:"中林 保子",role:"介護士",group:"訪問",shifts:["日2","早","遅"],off:9,paid:10},
+    {id:nid(),name:"西浦 静香",role:"介護士",group:"訪問",shifts:["早","夜","明"],off:9,paid:10},
+    {id:nid(),name:"ファム キム グアン",role:"介護士",group:"訪問",shifts:["日2","遅","夜","明"],off:9,paid:10},
+    {id:nid(),name:"水谷 文彦",role:"",group:"訪問",shifts:["宿夜","宿明"],off:9,paid:10},
+    {id:nid(),name:"金児 哲也",role:"",group:"訪問",shifts:["遅","夜","明"],off:22,paid:10},
+    {id:nid(),name:"西浦 優里香",role:"",group:"訪問",shifts:["8","早"],off:18,paid:10},
+    {id:nid(),name:"山本 いすず",role:"9:00〜13:00",group:"掃除",shifts:["4"],off:12,paid:10},
+    {id:nid(),name:"松井 幹英",role:"9:00〜18:00",group:"厨房",shifts:["遅","日遅"],off:9,paid:10},
+    {id:nid(),name:"江藤 美砂子",role:"7:00〜8:30",group:"厨房",shifts:["早","早遅"],off:9,paid:10}
   ],
   schedules:{}   // "2026-08": {cells:{ "staffId|iso": {c:"早",m?:1} | {w:1} | {y:1} }}
 });
@@ -1391,19 +1415,22 @@ const mkPat=(a,h,o,y)=>({"朝":a,"昼":h,"おやつ":o,"夕":y});
 const fullW=p=>{ const w={}; for(let i=0;i<7;i++) w[i]={...p}; return w; };
 let mPeriod=(()=>{ const t=new Date(); return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0"); })();
 let mView="user";      // user / staff / sum / cfg
-let mMode="meal";      // meal＝食事ごと / day＝1日まとめて
+let mMode="toggle";    // toggle＝切替 / 常食・ソフト・ゼリー＝その文字を入れる / clear＝消す / day＝1日まとめて
+let pMode="toggle";    // 曜日パターンの入力（切替／1／ソ／ゼ／消す）
+let mStaffRange="month";   // 職員の表：month＝1日〜末日（発注用） / pay＝前月21日〜今月20日（計算用）
+const payRange=p=>{ const f=d=>(d.getMonth()+1)+"/"+d.getDate(); return f(p[0])+"〜"+f(p[p.length-1]); };
 
 function defaultMealUsers(){
   const U=(name,diet,pat,active)=>({id:nid(),name,diet,pat,active});
   return [
-    U("利用者A","ソフト",mkPat(1,1,0,1),1), U("利用者B","常食",mkPat(1,1,1,1),1),
-    U("利用者C","常食",mkPat(1,1,0,1),1),   U("利用者D","常食",mkPat(1,1,1,1),0),
-    U("利用者E","ソフト",mkPat(1,1,1,1),1), U("利用者F","ソフト",mkPat(1,1,1,1),1),
-    U("利用者G","ソフト",mkPat(1,1,1,1),1),   U("利用者H","常食",mkPat(1,1,1,1),1),
-    U("利用者I","常食",mkPat(1,1,0,1),1),   U("利用者J","ソフト",mkPat(1,1,1,1),1),
-    U("利用者K","常食",mkPat(1,1,1,1),1), U("利用者L","常食",mkPat(1,1,0,1),1),
-    U("利用者M","常食",mkPat(1,1,1,1),1),   U("利用者N","ソフト",mkPat(1,1,0,1),1),
-    U("利用者O","ソフト",mkPat(1,1,1,1),1), U("利用者P","ソフト",mkPat(1,1,1,1),1)
+    U("乾 榮美子","ソフト",mkPat(1,1,0,1),1), U("古御門 勲","常食",mkPat(1,1,1,1),1),
+    U("松本 利也","常食",mkPat(1,1,0,1),1),   U("加藤 久昭","常食",mkPat(1,1,1,1),0),
+    U("石熊 英夫","ソフト",mkPat(1,1,1,1),1), U("草深 壽子","ソフト",mkPat(1,1,1,1),1),
+    U("吉井 里","ソフト",mkPat(1,1,1,1),1),   U("三浦 弘子","常食",mkPat(1,1,1,1),1),
+    U("木﨑 恵子","常食",mkPat(1,1,0,1),1),   U("川野 光子","ソフト",mkPat(1,1,1,1),1),
+    U("小宮 由紀子","常食",mkPat(1,1,1,1),1), U("濱口 さいの","常食",mkPat(1,1,0,1),1),
+    U("長沼 安子","常食",mkPat(1,1,1,1),1),   U("平田 淳恵","ソフト",mkPat(1,1,0,1),1),
+    U("辻本 昭司","ソフト",mkPat(1,1,1,1),1), U("中井 仁士","ソフト",mkPat(1,1,1,1),1)
   ];
 }
 function migrateMeal(){
@@ -1419,6 +1446,7 @@ function migrateMeal(){
   S.meal.users.forEach(u=>{
     if(!u.wpat){
       u.wpat=fullW(u.pat||mkPat(1,1,1,1));
+      if(/小宮/.test(u.name)) [1,2,4,5].forEach(w=>u.wpat[w]=mkPat(1,0,0,1));   // 月火木金は昼・おやつなし
     }
     for(let i=0;i<7;i++) if(!u.wpat[i]) u.wpat[i]=mkPat(1,1,1,1);
     delete u.pat;
@@ -1427,13 +1455,14 @@ function migrateMeal(){
   });
   S.shiftDefs.forEach(d=>{ if(!d.meals){ const v=STD_MEAL[d.code]; d.meals={"朝":0,"昼":v==="昼"?1:0,"夕":v==="夕"?1:0}; } });
   S.staff.forEach(s=>{
-    if(s.mealShifts===undefined) s.mealShifts=[];
+    if(s.mealShifts===undefined) s.mealShifts=/佐藤/.test(s.name)?"all":/西浦\s*静香/.test(s.name)?["早"]:[];
   });
 }
 
 /* --- 食べる／食べないの判定 --- */
 function dowOf(s){ const a=s.split("-"); return new Date(+a[0],+a[1]-1,+a[2]).getDay(); }
 function monthDays(p){ const [y,m]=p.split("-").map(Number), out=[], last=new Date(y,m,0).getDate(); for(let d=1;d<=last;d++) out.push(new Date(y,m-1,d)); return out; }
+function cellDiet(u,v){ if(!v) return null; return (typeof v==="string"&&DCH[v])?v:u.diet; }   // マスの食種（なしはnull）
 function userBase(u,dIso){ return u.wpat[dowOf(dIso)]; }
 function userEff(u,dIso){ if(!u.active) return mkPat(0,0,0,0); return S.meal.userEx[u.id+"|"+dIso]||userBase(u,dIso); }
 function shiftOf(sid,dIso){            // その日の勤務（21日〜20日の勤務表から探す）
@@ -1479,17 +1508,18 @@ function mealCuts(){ return new Set((S.mealLines&&S.mealLines.days)||[]); }
 function mealTable(days,cfg,withTally){
   const M=cfg.meals, K=M.length, N=days.length*K, single=K===1;
   const cuts=mealCuts();
-  const dcls=d=> (d.getDate()>1&&cuts.has(d.getDate()-1))?"cut":(S.mealLines.weekly&&d.getDay()===0)?"wk":"d0";
+  // 太線：設定した日のあと・月の境目（21日〜20日の表）。表の左端には引かない
+  const dcls=(d,di)=> di===0?"d0":(d.getDate()===1||cuts.has(d.getDate()-1))?"cut":(S.mealLines.weekly&&d.getDay()===0)?"wk":"d0";
   let h='<table class="sheet meal'+(single?" single":"")+'"><thead><tr class="h1"><th class="name-col"'+(single?'':' rowspan="2"')+'>氏 名</th>';
-  days.forEach(d=>{
+  days.forEach((d,di)=>{
     const dw=d.getDay()===0?" dow-sun":d.getDay()===6?" dow-sat":"";
-    h+='<th colspan="'+K+'" class="'+dcls(d)+dw+'"><span class="dnum">'+d.getDate()+'</span><span class="dw">'+DOW[d.getDay()]+'</span></th>';
+    h+='<th colspan="'+K+'" class="'+dcls(d,di)+dw+'"><span class="dnum">'+d.getDate()+'</span><span class="dw">'+DOW[d.getDay()]+'</span></th>';
   });
   if(withTally) h+='<th colspan="'+K+'" class="tcol d0">'+cfg.tallyLabel+'</th>';
   h+='</tr>';
   if(!single){
     h+='<tr class="h2">';
-    days.forEach(d=>{ M.forEach((m,mi)=>{ h+='<th class="mh '+MC[m]+(mi===0?" "+dcls(d):"")+'">'+MS[m]+'</th>'; }); });
+    days.forEach((d,di)=>{ M.forEach((m,mi)=>{ h+='<th class="mh '+MC[m]+(mi===0?" "+dcls(d,di):"")+'">'+MS[m]+'</th>'; }); });
     if(withTally) M.forEach((m,mi)=>{ h+='<th class="mh tcol '+MC[m]+(mi===0?" d0":"")+'">'+MS[m]+'</th>'; });
     h+='</tr>';
   }
@@ -1498,28 +1528,26 @@ function mealTable(days,cfg,withTally){
   const tDays=(cfg.tallyDays||days).map(iso);
   cfg.rows.forEach(r=>{
     h+='<tr'+(r.active?'':' class="off-person"')+'><td class="name-col"><span class="nm">'+esc(r.name)+'</span>'+(r.note?'<span class="role" title="'+esc(r.note)+'">'+esc(r.note)+'</span>':'')+'</td>';
-    const hit=cfg.sums.map(sp=>sp.match(r));
     days.forEach((d,di)=>{
       const dIso=iso(d), e=r.eff(dIso), ex=r.ex(dIso), base=ex?r.base(dIso):null;
       M.forEach((m,mi)=>{
-        const on=!!e[m];
-        if(on) hit.forEach((ok,si)=>{ if(ok) sums[si][di*K+mi]++; });
-        let cls="mc "+MC[m]+(mi===0?" "+dcls(d):"");
-        if(ex && !!ex[m]!==!!base[m]) cls+=" ex";        // 自動の内容から変更したマス
-        h+='<td class="'+cls+'" data-k="'+cfg.kind+'" data-id="'+r.id+'" data-d="'+dIso+'" data-m="'+m+'">'+(on?r.ch:"")+'</td>';
+        const v=e[m], on=!!v;
+        if(on) cfg.sums.forEach((sp,si)=>{ if(sp.cell(r,v)) sums[si][di*K+mi]++; });
+        let cls="mc "+MC[m]+(mi===0?" "+dcls(d,di):"");
+        if(ex && r.norm(ex[m])!==r.norm(base[m])) cls+=" ex";        // 自動の内容から変更したマス
+        h+='<td class="'+cls+'" data-k="'+cfg.kind+'" data-id="'+r.id+'" data-d="'+dIso+'" data-m="'+m+'">'+(on?r.chOf(v):"")+'</td>';
       });
     });
     if(withTally){
       const t=M.map(()=>0);
-      tDays.forEach(dIso=>{ const e=r.eff(dIso); M.forEach((m,mi)=>{ if(e[m]) t[mi]++; }); });
-      hit.forEach((ok,si)=>{ if(ok) t.forEach((v,mi)=>sumT[si][mi]+=v); });
+      tDays.forEach(dIso=>{ const e=r.eff(dIso); M.forEach((m,mi)=>{ const v=e[m]; if(v){ t[mi]++; cfg.sums.forEach((sp,si)=>{ if(sp.cell(r,v)) sumT[si][mi]++; }); } }); });
       M.forEach((m,mi)=>{ h+='<td class="tc tcol'+(mi===0?" d0":"")+'">'+(r.active?t[mi]:"")+'</td>'; });
     }
     h+='</tr>';
   });
   cfg.sums.forEach((sp,si)=>{
     let row='<tr class="sum-row'+(si===0?" first":"")+(sp.grand?" grand":"")+'"><td class="name-col">'+sp.label+'</td>';
-    days.forEach((d,di)=>{ M.forEach((m,mi)=>{ const c=sums[si][di*K+mi]; row+='<td'+(mi===0?' class="'+dcls(d)+'"':'')+'>'+(c||sp.zero?c:"")+'</td>'; }); });
+    days.forEach((d,di)=>{ M.forEach((m,mi)=>{ const c=sums[si][di*K+mi]; row+='<td'+(mi===0?' class="'+dcls(d,di)+'"':'')+'>'+(c||sp.zero?c:"")+'</td>'; }); });
     if(withTally) M.forEach((m,mi)=>{ const c=sumT[si][mi]; row+='<td class="tc tcol'+(mi===0?" d0":"")+'">'+(c||sp.zero?c:"")+'</td>'; });
     h+=row+'</tr>';
   });
@@ -1532,21 +1560,22 @@ function mealHalves(days,cfg,pm){
 function paintWrap(id,html){ const w=document.getElementById(id), sl=w.scrollLeft, st=w.scrollTop; w.innerHTML=html; w.scrollLeft=sl; w.scrollTop=st; }
 function userCfg(){
   return {meals:MEALS,kind:"u",tallyLabel:"月合計",
-    rows:S.meal.users.map(u=>({id:u.id,name:u.name,note:u.active?"":"休止中",active:!!u.active,ch:DCH[u.diet]||"1",diet:u.diet,
+    rows:S.meal.users.map(u=>({id:u.id,name:u.name,note:u.active?"":"休止中",active:!!u.active,
+      chOf:v=>DCH[cellDiet(u,v)]||"", norm:v=>cellDiet(u,v),
       eff:d=>userEff(u,d), base:d=>userBase(u,d), ex:d=>u.active?S.meal.userEx[u.id+"|"+d]:null})),
-    sums:[...DIETS.map(dt=>({label:DLBL[dt],match:r=>r.diet===dt})),{label:"合計",match:()=>true,grand:true,zero:true}]};
+    sums:[...DIETS.map(dt=>({label:DLBL[dt],cell:(r,v)=>r.norm(v)===dt})),{label:"合計",cell:()=>true,grand:true,zero:true}]};
 }
 let mShowAll=false;   // 職員の表：全員を表示
 function staffMayEat(s,meal){
   const codes=s.mealShifts==="all"?staffChipCodes(s):(Array.isArray(s.mealShifts)?s.mealShifts:[]);
   return codes.some(c=>{ const df=defOf(c); return !!(df&&df.meals&&df.meals[meal]); });
 }
-function staffMealCfg(meal,days){
-  const tDays=periodDays(mPeriod), check=[...days,...tDays].map(iso);
+function staffMealCfg(meal,days,pay){   // pay＝21日〜20日（計算用）の表：合計も表の期間
+  const tDays=pay?days:periodDays(mPeriod), check=[...days,...tDays].map(iso);
   const rows=orderedStaff().filter(s=> mShowAll || staffMayEat(s,meal) || check.some(d=>staffEff(s,d)[meal]))
-    .map(s=>({id:s.id,name:s.name,note:staffRuleShort(s),active:true,ch:"1",
+    .map(s=>({id:s.id,name:s.name,note:staffRuleShort(s),active:true,chOf:()=>"1",norm:v=>v?1:0,
       eff:d=>staffEff(s,d), base:d=>staffBase(s,d), ex:d=>S.meal.staffEx[s.id+"|"+d]}));
-  return {meals:[meal],kind:"s",tallyLabel:"21〜20<br>合計",tallyDays:tDays,rows,sums:[{label:"合計",match:()=>true,grand:true}]};
+  return {meals:[meal],kind:"s",tallyLabel:pay?"合計":"21〜20<br>合計",tallyDays:tDays,rows,sums:[{label:"合計",cell:()=>true,grand:true}]};
 }
 function buildMealPeriods(){
   const sel=document.getElementById("mPeriodSel"); sel.innerHTML="";
@@ -1564,6 +1593,8 @@ function renderMeal(){
   document.querySelectorAll("#mViewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===mView));
   document.querySelectorAll(".mview").forEach(v=>v.classList.toggle("on",v.id==="mv-"+mView));
   document.getElementById("mModeSeg").style.display=mView==="user"?"":"none";
+  document.getElementById("mRangeSeg").style.display=mView==="staff"?"":"none";
+  document.querySelectorAll("#mRangeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.r===mStaffRange));
   document.getElementById("mExcelBtn").style.display=mView==="cfg"?"none":"";
   document.getElementById("mPrintBtn").style.display=mView==="cfg"?"none":"";
   if(mView==="user"){
@@ -1573,14 +1604,17 @@ function renderMeal(){
     paintWrap("mUserWrap",mealTable(days,cfg,true));
     document.getElementById("mUserPrint").innerHTML=mealHalves(days,cfg,pm);
   }else if(mView==="staff"){
-    const p=periodDays(mPeriod);
-    document.getElementById("mStaffL").textContent=S.facility+"　"+pm+"月 職員 食事";
-    document.getElementById("mStaffR").textContent=range+"　（勤務表と連動／合計は"+(p[0].getMonth()+1)+"/21〜"+pm+"/20）";
+    const p=periodDays(mPeriod), pay=mStaffRange==="pay", sd=pay?p:days, pr=payRange(p);
+    document.getElementById("mStaffL").textContent=S.facility+"　"+pm+"月 職員 食事"+(pay?"（計算用）":"");
+    document.getElementById("mStaffR").textContent=pay
+      ? "R"+(p[0].getFullYear()-2018)+"."+pr.replace(/\//g,".")+"　（勤務表と連動）"
+      : range+"　（勤務表と連動／合計は"+(p[0].getMonth()+1)+"/21〜"+pm+"/20）";
+    document.querySelectorAll("#mv-staff .mt-range").forEach(x=>x.textContent=pay?"（"+pr+"）":"");
     document.getElementById("mShowAll").checked=mShowAll;
     [["昼","mLunchWrap"],["夕","mDinnerWrap"]].forEach(([meal,id])=>{
-      const cfg=staffMealCfg(meal,days);
+      const cfg=staffMealCfg(meal,sd,pay);
       if(!cfg.rows.length){ document.getElementById(id).innerHTML='<div class="empty-note">'+meal+'食の対象者はいません（ルールは「食事の設定」で。「全員を表示」にすると手入力できます）</div>'; return; }
-      paintWrap(id,mealTable(days,cfg,true));
+      paintWrap(id,mealTable(sd,cfg,true));
     });
   }else if(mView==="sum") renderMealSum(days,range,pm);
   else renderMealCfg();
@@ -1591,7 +1625,7 @@ function renderMealSum(days,range,pm){
   const isos=days.map(iso), staff=orderedStaff();
   const uc={}; DIETS.forEach(dt=>{ uc[dt]={}; MEALS.forEach(m=>uc[dt][m]=isos.map(()=>0)); });
   const sc={}; MEALS.forEach(m=>sc[m]=isos.map(()=>0));
-  S.meal.users.forEach(u=>{ if(!uc[u.diet]) return; isos.forEach((d,i)=>{ const e=userEff(u,d); MEALS.forEach(m=>{ if(e[m]) uc[u.diet][m][i]++; }); }); });
+  S.meal.users.forEach(u=>{ isos.forEach((d,i)=>{ const e=userEff(u,d); MEALS.forEach(m=>{ const dt=cellDiet(u,e[m]); if(dt&&uc[dt]) uc[dt][m][i]++; }); }); });
   staff.forEach(s=>{ isos.forEach((d,i)=>{ const e=staffEff(s,d); SMEALS.forEach(m=>{ if(e[m]) sc[m][i]++; }); }); });
   const cuts=mealCuts(), cc=(i,x)=>{ const c=[x||"",(i>0&&cuts.has(days[i].getDate()-1))?"cut":""].join(" ").trim(); return c?' class="'+c+'"':''; };
   let h='<tr><th style="min-width:110px">食種・食事</th>'+days.map((d,i)=>'<th'+cc(i)+'>'+d.getDate()+'</th>').join("")+'<th>合計</th></tr>';
@@ -1647,9 +1681,12 @@ function mealsLabel(p){
 function patternSummary(u){        // 例）月火木金：昼・おやつなし　／　水土日：全食
   const groups=[];
   WORDER.forEach(w=>{
-    const p=u.wpat[w], sig=MEALS.map(m=>p[m]?1:0).join("");
+    const p=u.wpat[w], sig=MEALS.map(m=>cellDiet(u,p[m])||"-").join("|");
     let g=groups.find(x=>x.sig===sig);
-    if(!g){ g={sig,label:mealsLabel(p),days:""}; groups.push(g); }
+    if(!g){
+      const odd=MEALS.filter(m=>p[m]&&cellDiet(u,p[m])!==u.diet).map(m=>m+DCH[cellDiet(u,p[m])]);   // 食種が違う食事（例：朝ソ）
+      g={sig,label:mealsLabel(p)+(odd.length?"（"+odd.join("・")+"）":""),days:""}; groups.push(g);
+    }
     g.days+=DOW[w];
   });
   if(groups.length===1) return "毎日："+groups[0].label;
@@ -1679,7 +1716,6 @@ function renderMealCfg(){
   document.getElementById("mShiftMealTable").innerHTML=g;
   let u2="";
   S.meal.users.forEach(u=>{
-    const ch=DCH[u.diet]||"1";
     u2+='<div class="ucard'+(u.active?"":" off")+'" data-id="'+u.id+'">'
       +'<div class="ucard-top">'
       +'<input type="text" class="e-name" value="'+esc(u.name)+'">'
@@ -1690,7 +1726,7 @@ function renderMealCfg(){
     WORDER.forEach(w=>{ u2+='<span class="wh'+(w===0?" sun":w===6?" sat":"")+'" data-act="wd" data-w="'+w+'">'+DOW[w]+'</span>'; });
     MEALS.forEach(m=>{
       u2+='<span class="wh '+MC[m]+'" data-act="meal" data-m="'+m+'">'+MS[m]+'</span>';
-      WORDER.forEach(w=>{ const on=u.wpat[w][m]; u2+='<span class="wc '+MC[m]+(on?" on":"")+'" data-act="cell" data-w="'+w+'" data-m="'+m+'">'+(on?ch:"・")+'</span>'; });
+      WORDER.forEach(w=>{ const dt=cellDiet(u,u.wpat[w][m]); u2+='<span class="wc '+MC[m]+(dt?" on":"")+'" data-act="cell" data-w="'+w+'" data-m="'+m+'">'+(dt?DCH[dt]:"・")+'</span>'; });
     });
     u2+='</div><div class="wg-sum">'+esc(patternSummary(u))+'</div></div>';
   });
@@ -1698,22 +1734,28 @@ function renderMealCfg(){
 }
 
 /* --- 操作 --- */
-function toggleMeal(store,k,M,base,cur,m,allIfEmpty){
-  const t={}; M.forEach(x=>t[x]=cur[x]?1:0);
+function penValue(u,cur,pen){      // マスの新しい値（0＝なし／1＝その人の食種／"ソフト"など＝手入力の食種）
+  if(pen==="clear") return 0;
+  if(DCH[pen]) return cellDiet(u,cur)===pen ? 0 : (pen===u.diet?1:pen);   // 同じ文字をもう一度で消える
+  return cur?0:1;                                                          // 切替
+}
+function setUserMeal(u,dIso,m){
+  const k=u.id+"|"+dIso, base=userBase(u,dIso), cur=userEff(u,dIso), t={};
+  MEALS.forEach(x=>t[x]=cur[x]||0);
   if(mMode==="day"){
-    if(M.some(x=>t[x])) M.forEach(x=>t[x]=0);                              // その日を全部なしに
-    else if(M.some(x=>base[x])) M.forEach(x=>t[x]=base[x]?1:0);            // 自動の内容に戻す
-    else if(allIfEmpty) M.forEach(x=>t[x]=1);
-    else t[m]=1;
-  }else t[m]=t[m]?0:1;
-  if(M.every(x=>!!t[x]===!!base[x])) delete store[k]; else store[k]=t;
+    if(MEALS.some(x=>t[x])) MEALS.forEach(x=>t[x]=0);                      // その日を全部なしに
+    else if(MEALS.some(x=>base[x])) MEALS.forEach(x=>t[x]=base[x]||0);     // 曜日パターンに戻す
+    else MEALS.forEach(x=>t[x]=1);
+  }else if(mMode==="toggle") t[m]=t[m]?0:(base[m]||1);                    // 付ける時は曜日パターンの文字
+  else t[m]=penValue(u,t[m],mMode);
+  if(MEALS.every(x=>cellDiet(u,t[x])===cellDiet(u,base[x]))) delete S.meal.userEx[k]; else S.meal.userEx[k]=t;
 }
 document.getElementById("pane-meal").addEventListener("click",e=>{
   const td=e.target.closest("td.mc"); if(!td||td.closest(".print-only")) return;
   const id=td.dataset.id, dIso=td.dataset.d, m=td.dataset.m;
   if(td.dataset.k==="u"){
     const u=S.meal.users.find(x=>x.id===id); if(!u||!u.active) return;
-    toggleMeal(S.meal.userEx,u.id+"|"+dIso,MEALS,userBase(u,dIso),userEff(u,dIso),m,true);
+    setUserMeal(u,dIso,m);
   }else{
     const s=S.staff.find(x=>x.id===id); if(!s) return;
     const base=staffBase(s,dIso), cur=staffEff(s,dIso), t={}, k=s.id+"|"+dIso;
@@ -1724,6 +1766,7 @@ document.getElementById("pane-meal").addEventListener("click",e=>{
 });
 document.getElementById("mViewSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; mView=b.dataset.v; renderMeal(); });
 document.getElementById("mModeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; mMode=b.dataset.mode; document.querySelectorAll("#mModeSeg button").forEach(x=>x.classList.toggle("on",x===b)); });
+document.getElementById("mRangeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; mStaffRange=b.dataset.r; renderMeal(); });
 document.getElementById("mPeriodSel").addEventListener("change",e=>{ mPeriod=e.target.value; renderMeal(); });
 document.getElementById("mPrintBtn").addEventListener("click",()=>window.print());
 document.getElementById("mShowAll").addEventListener("change",e=>{ mShowAll=e.target.checked; renderMeal(); });
@@ -1759,13 +1802,18 @@ document.getElementById("mUserCards").addEventListener("click",e=>{
   const u=S.meal.users.find(x=>x.id===card.dataset.id); if(!u)return;
   if(e.target.closest(".e-del")){ S.meal.users=S.meal.users.filter(x=>x.id!==u.id); save(); renderMealCfg(); toast(u.name+" を削除しました"); return; }
   const t=e.target.closest("[data-act]"); if(!t)return;
-  const W=u.wpat, act=t.dataset.act;
-  if(act==="cell"){ const w=t.dataset.w, m=t.dataset.m; W[w][m]=W[w][m]?0:1; }
-  else if(act==="wd"){ const w=t.dataset.w, all=MEALS.every(m=>W[w][m]); MEALS.forEach(m=>W[w][m]=all?0:1); }
-  else if(act==="meal"){ const m=t.dataset.m, all=WORDER.every(w=>W[w][m]); WORDER.forEach(w=>W[w][m]=all?0:1); }
-  else if(act==="all"){ const all=WORDER.every(w=>MEALS.every(m=>W[w][m])); WORDER.forEach(w=>MEALS.forEach(m=>W[w][m]=all?0:1)); }
+  const W=u.wpat, act=t.dataset.act, cells=[];
+  if(act==="cell") cells.push([t.dataset.w,t.dataset.m]);
+  else if(act==="wd") MEALS.forEach(m=>cells.push([t.dataset.w,m]));                // 曜日をまとめて
+  else if(act==="meal") WORDER.forEach(w=>cells.push([w,t.dataset.m]));             // 食事をまとめて
+  else if(act==="all") WORDER.forEach(w=>MEALS.forEach(m=>cells.push([w,m])));
+  if(cells.length===1){ const [w,m]=cells[0]; W[w][m]=penValue(u,W[w][m],pMode); }
+  else if(pMode==="toggle"){ const all=cells.every(([w,m])=>W[w][m]); cells.forEach(([w,m])=>{ if(all) W[w][m]=0; else if(!W[w][m]) W[w][m]=1; }); }
+  else if(pMode==="clear") cells.forEach(([w,m])=>W[w][m]=0);
+  else{ const all=cells.every(([w,m])=>cellDiet(u,W[w][m])===pMode); cells.forEach(([w,m])=>W[w][m]=all?0:(pMode===u.diet?1:pMode)); }
   save(); renderMealCfg();
 });
+document.getElementById("pModeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; pMode=b.dataset.mode; document.querySelectorAll("#pModeSeg button").forEach(x=>x.classList.toggle("on",x===b)); });
 document.getElementById("mUserCards").addEventListener("change",e=>{
   const card=e.target.closest(".ucard"); if(!card)return;
   const u=S.meal.users.find(x=>x.id===card.dataset.id); if(!u)return;
@@ -1789,8 +1837,8 @@ function exportMealUserCSV(){       // 元データと同じ並び：日ごと�
   rows.push(h1,h2,h3);
   const N=days.length*4, cnt={}; DIETS.forEach(dt=>cnt[dt]=new Array(N).fill(0));
   S.meal.users.forEach(u=>{
-    const line=[u.name+(u.active?"":"（休止）"),u.diet], tot=[0,0,0,0], ch=DCH[u.diet]||"1";
-    days.forEach((d,di)=>{ const e=userEff(u,iso(d)); MEALS.forEach((m,mi)=>{ if(e[m]){ line.push(ch); tot[mi]++; if(cnt[u.diet])cnt[u.diet][di*4+mi]++; } else line.push(""); }); });
+    const line=[u.name+(u.active?"":"（休止）"),u.diet], tot=[0,0,0,0];
+    days.forEach((d,di)=>{ const e=userEff(u,iso(d)); MEALS.forEach((m,mi)=>{ const dt=cellDiet(u,e[m]); if(dt){ line.push(DCH[dt]); tot[mi]++; if(cnt[dt])cnt[dt][di*4+mi]++; } else line.push(""); }); });
     line.push(...tot); rows.push(line);
   });
   const grand=new Array(N).fill(0);
@@ -1798,13 +1846,16 @@ function exportMealUserCSV(){       // 元データと同じ並び：日ごと�
   const gl=["合計",""], gm=[0,0,0,0]; for(let i=0;i<N;i++){ gl.push(grand[i]); gm[i%4]+=grand[i]; } gl.push(...gm); rows.push(gl);
   downloadCSV(rows,"利用者食数_"+mPeriod.replace("-","")+".csv");
 }
-function exportMealStaffCSV(){     // 元のExcelと同じ：昼食の表、その下に夕食の表
-  const days=monthDays(mPeriod), p21=periodDays(mPeriod).map(iso), [py,pm]=mPeriod.split("-").map(Number);
-  const rows=[[S.facility+" "+pm+"月 職員 食事（R"+(py-2018)+"."+pm+".1〜"+pm+"."+days.length+"・勤務表と連動）","","1＝注文"]];
+function exportMealStaffCSV(){     // 元のExcelと同じ：昼食の表、その下に夕食の表（計算用は前月21日〜今月20日）
+  const pay=mStaffRange==="pay", pd=periodDays(mPeriod), days=pay?pd:monthDays(mPeriod), p21=pd.map(iso), [py,pm]=mPeriod.split("-").map(Number);
+  const title=pay ? pm+"月 職員 食事（計算用 R"+(pd[0].getFullYear()-2018)+"."+payRange(pd).replace(/\//g,".")+"・勤務表と連動）"
+                  : pm+"月 職員 食事（R"+(py-2018)+"."+pm+".1〜"+pm+"."+days.length+"・勤務表と連動）";
+  const rows=[[S.facility+" "+title,"","1＝注文"]];
   ["昼","夕"].forEach(meal=>{
-    const cfg=staffMealCfg(meal,days);
+    const cfg=staffMealCfg(meal,days,pay);
     rows.push([]); rows.push(["職員 "+meal+"食"]);
-    rows.push(["氏名","ルール",...days.map(d=>d.getDate()),"合計(前月21〜20)"]);
+    if(pay) rows.push(["","",...days.map((d,i)=>(i===0||d.getDate()===1)?(d.getMonth()+1)+"月":""),""]);
+    rows.push(["氏名","ルール",...days.map(d=>d.getDate()),pay?"合計":"合計(前月21〜20)"]);
     rows.push(["","",...days.map(d=>DOW[d.getDay()]),""]);
     const col=new Array(days.length).fill(0); let gt=0;
     cfg.rows.forEach(r=>{
@@ -1814,14 +1865,14 @@ function exportMealStaffCSV(){     // 元のExcelと同じ：昼食の表、そ�
     });
     rows.push(["合計","",...col,gt]);
   });
-  downloadCSV(rows,"職員食事_"+mPeriod.replace("-","")+".csv");
+  downloadCSV(rows,"職員食事_"+(pay?"計算用_":"")+mPeriod.replace("-","")+".csv");
 }
 function exportMealSumCSV(){
   const days=monthDays(mPeriod), isos=days.map(iso), [py,pm]=mPeriod.split("-").map(Number), staff=orderedStaff();
   const rows=[[S.facility+" 合計食数 R"+(py-2018)+"."+pm+".1〜"+pm+"."+days.length+"（職員分は常食に含む）"],["食種","食事",...days.map(d=>d.getDate()),"合計"]];
   const stf=(d,m)=>{ let c=0; staff.forEach(s=>{ if(staffEff(s,d)[m]) c++; }); return c; };
   DIETS.forEach(dt=>{
-    MEALS.forEach(m=>{ const line=[dt,m]; let tot=0; isos.forEach(d=>{ let c=0; S.meal.users.forEach(u=>{ if(u.diet===dt&&userEff(u,d)[m]) c++; }); if(dt==="常食") c+=stf(d,m); tot+=c; line.push(c); }); line.push(tot); rows.push(line); });
+    MEALS.forEach(m=>{ const line=[dt,m]; let tot=0; isos.forEach(d=>{ let c=0; S.meal.users.forEach(u=>{ if(cellDiet(u,userEff(u,d)[m])===dt) c++; }); if(dt==="常食") c+=stf(d,m); tot+=c; line.push(c); }); line.push(tot); rows.push(line); });
     rows.push([]);
   });
   SMEALS.forEach(m=>{ const line=["（内 職員）",m]; let tot=0; isos.forEach(d=>{ const c=stf(d,m); tot+=c; line.push(c); }); line.push(tot); rows.push(line); });
@@ -1915,8 +1966,12 @@ document.getElementById("addTimeBtn").addEventListener("click",()=>{
   const ins=document.querySelectorAll("#timesList .t-c"); if(ins.length) ins[ins.length-1].focus();
 });
 
+/* 上のバーの高さ（入力ボタンをその下に固定するため） */
+function setAbh(){ const a=document.querySelector(".appbar"); if(a) document.documentElement.style.setProperty("--abh",a.offsetHeight+"px"); }
+window.addEventListener("resize",setAbh); setAbh();
+
 /* ===== オフライン対応 ===== */
-function updateNet(){ document.getElementById("netBadge").hidden = navigator.onLine || !syncReady(); }
+function updateNet(){ document.getElementById("netBadge").hidden = navigator.onLine || !syncReady(); setAbh(); }
 window.addEventListener("online",()=>{ updateNet(); if(syncReady()) cloudPull(true); });   // つながったら同期（オフライン中の入力を送る）
 window.addEventListener("offline",updateNet);
 if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){
